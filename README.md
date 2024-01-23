@@ -1,6 +1,6 @@
-# pythoneda-runtime/boot-application
+# pythoneda-runtime-infrastructure/eventstoredb-application
 
-Definition of <https://github.com/pythoneda-runtime/boot-application>.
+Definition of <https://github.com/pythoneda-runtime-infrastructure/eventstoredb-application>.
 
 ## How to declare it in your flake
 
@@ -11,10 +11,10 @@ Check the latest tag of this repository and use it instead of the `[version]` pl
   description = "[..]";
   inputs = rec {
     [..]
-    pythoneda-runtime-boot-application = {
+    pythoneda-runtime-infrastructure-eventstoredb-application = {
       [optional follows]
       url =
-        "github:pythoneda-runtime-def/boot-application/[version]";
+        "github:pythoneda-runtime-infrastructure-def/eventstoredb-application/[version]";
     };
   };
   outputs = [..]
@@ -25,21 +25,25 @@ Should you use another PythonEDA modules, you might want to pin those also used 
 
 Use the specific package depending on your system (one of `flake-utils.lib.defaultSystems`) and Python version:
 
-- `#packages.[system].pythoneda-runtime-boot-application-python38` 
-- `#packages.[system].pythoneda-runtime-boot-application-python39` 
-- `#packages.[system].pythoneda-runtime-boot-application-python310` 
-- `#packages.[system].pythoneda-runtime-boot-application-python311` 
+- `#packages.[system].pythoneda-runtime-infrastructure-eventstoredb-application-python38` 
+- `#packages.[system].pythoneda-runtime-infrastructure-eventstoredb-application-python39` 
+- `#packages.[system].pythoneda-runtime-infrastructure-eventstoredb-application-python310` 
+- `#packages.[system].pythoneda-runtime-infrastructure-eventstoredb-application-python311` 
 
 ## How to run pythoneda-runtime/boot
 
 ``` sh
-nix run 'https://github.com/pythoneda-runtime-def/boot-application/[version]'
+nix run 'https://github.com/pythoneda-runtime-infrastructure-def/eventstoredb-application/[version]'
 ```
 
 ### Usage
 
 ``` sh
-nix run https://github.com/pythoneda-runtime-def/boot-application/[version] [-h|--help] [-d|--de-url defUrl]
+nix run https://github.com/pythoneda-runtime-infrastructure-def/eventstoredb-application/[version] [-h|--help] [-p|--http-port httpPort] [-t|--tcp-port tcpPort] [-r|--run-projections "all"] [-i|--insecure] [-a|--enable-atom-over-http]
 ```
 - `-h|--help`: Prints the usage.
-- `-d|--def-url`: The url of the definition repository of the domain to boot.
+- `-p|--http-port`: The HTTP port.
+- `-t|--tcp-port`: The TCP/IP port.
+- `-r|--run-projections`: Which projections to run.
+- `-i|--insecure`: Whether to run EventStoreDB insecurely.
+- `-a|--enable-atom-over-http`: Whether to enable Atom over HTTP.

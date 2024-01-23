@@ -1,8 +1,8 @@
 # flake.nix
 #
-# This file packages pythoneda-runtime/boot-application as a Nix flake.
+# This file packages pythoneda-runtime-infrastructure/eventstoredb-application as a Nix flake.
 #
-# Copyright (C) 2024-today rydnr's pythoneda-runtime-def/boot-application
+# Copyright (C) 2024-today rydnr's pythoneda-runtime-infrastructure-def/eventstoredb-application
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -17,24 +17,27 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 {
-  description = "Application layer for pythoneda-runtime/boot";
+  description =
+    "Application layer for pythoneda-runtime-infrastructure/eventstoredb";
   inputs = rec {
     flake-utils.url = "github:numtide/flake-utils/v1.0.0";
     nixos.url = "github:NixOS/nixpkgs/23.11";
-    pythoneda-runtime-boot = {
+    pythoneda-runtime-infrastructure-eventstoredb = {
       inputs.flake-utils.follows = "flake-utils";
       inputs.nixos.follows = "nixos";
       inputs.pythoneda-shared-banner.follows = "pythoneda-shared-banner";
       inputs.pythoneda-shared-domain.follows = "pythoneda-shared-domain";
-      url = "github:pythoneda-runtime-def/boot/0.0.4";
+      url = "github:pythoneda-runtime-infrastructure-def/eventstoredb/0.0.0";
     };
-    pythoneda-runtime-boot-infrastructure = {
+    pythoneda-runtime-infrastructure-eventstoredb-infrastructure = {
       inputs.flake-utils.follows = "flake-utils";
       inputs.nixos.follows = "nixos";
-      inputs.pythoneda-runtime-boot.follows = "pythoneda-runtime-boot";
+      inputs.pythoneda-runtime-infrastructure-eventstoredb.follows =
+        "pythoneda-runtime-infrastructure-eventstoredb";
       inputs.pythoneda-shared-banner.follows = "pythoneda-shared-banner";
       inputs.pythoneda-shared-domain.follows = "pythoneda-shared-domain";
-      url = "github:pythoneda-runtime-def/boot-infrastructure/0.0.3";
+      url =
+        "github:pythoneda-runtime-infrastructure-def/eventstoredb-infrastructure/0.0.0";
     };
     pythoneda-shared-application = {
       inputs.flake-utils.follows = "flake-utils";
@@ -59,15 +62,16 @@
     with inputs;
     flake-utils.lib.eachDefaultSystem (system:
       let
-        org = "pythoneda-runtime";
-        repo = "boot-application";
-        version = "0.0.1";
-        sha256 = "0s2wawzyz1annicms4s540fqsm0666i1r35l5bw5sl38dxj8bh77";
+        org = "pythoneda-runtime-infrastructure";
+        repo = "eventstoredb-application";
+        version = "0.0.0";
+        sha256 = "09nadgmspwk6s5lvyn51s6zgdww9n8j28pyxq99ckx7lpi05w5r6";
         pname = "${org}-${repo}";
         pythonpackage = builtins.replaceStrings [ "-" ] [ "." ] pname;
         package = builtins.replaceStrings [ "." ] [ "/" ] pythonpackage;
-        entrypoint = "boot_app";
-        description = "Application layer for pythoneda-runtime/boot";
+        entrypoint = "eventstoredb_app";
+        description =
+          "Application layer for pythoneda-runtime-infrastructure/eventstoredb";
         license = pkgs.lib.licenses.gpl3;
         homepage = "https://github.com/${org}/${repo}";
         maintainers = with pkgs.lib.maintainers;
@@ -80,8 +84,9 @@
           builtins.replaceStrings [ "\n" ] [ "" ] "nixos-${nixosVersion}";
         shared = import "${pythoneda-shared-banner}/nix/shared.nix";
         pkgs = import nixos { inherit system; };
-        pythoneda-runtime-boot-application-for = { python
-          , pythoneda-runtime-boot, pythoneda-runtime-boot-infrastructure
+        pythoneda-runtime-infrastructure-eventstoredb-application-for = { python
+          , pythoneda-runtime-infrastructure-eventstoredb
+          , pythoneda-runtime-infrastructure-eventstoredb-infrastructure
           , pythoneda-shared-application, pythoneda-shared-banner
           , pythoneda-shared-domain }:
           let
@@ -93,8 +98,8 @@
               "${pythonMajorVersion}.${builtins.elemAt pythonVersionParts 1}";
             wheelName =
               "${pnameWithUnderscores}-${version}-py${pythonMajorVersion}-none-any.whl";
-            banner_file = "${package}/boot_banner.py";
-            banner_class = "BootBanner";
+            banner_file = "${package}/eventstoredb_banner.py";
+            banner_class = "EventstoredbBanner";
           in python.pkgs.buildPythonPackage rec {
             inherit pname version;
             projectDir = ./.;
@@ -105,9 +110,10 @@
               desc = description;
               inherit homepage package pname pythonMajorMinorVersion
                 pythonpackage version;
-              pythonedaRuntimeBoot = pythoneda-runtime-boot.version;
-              pythonedaRuntimeBootInfrastructure =
-                pythoneda-runtime-boot-infrastructure.version;
+              pythonedaRuntimeInfrastructureEventstoredb =
+                pythoneda-runtime-infrastructure-eventstoredb.version;
+              pythonedaRuntimeInfrastructureEventstoredbInfrastructure =
+                pythoneda-runtime-infrastructure-eventstoredb-infrastructure.version;
               pythonedaSharedApplication = pythoneda-shared-application.version;
               pythonedaSharedBanner = pythoneda-shared-banner.version;
               pythonedaSharedDomain = pythoneda-shared-domain.version;
@@ -151,8 +157,8 @@
 
             nativeBuildInputs = with python.pkgs; [ pip poetry-core ];
             propagatedBuildInputs = with python.pkgs; [
-              pythoneda-runtime-boot
-              pythoneda-runtime-boot-infrastructure
+              pythoneda-runtime-infrastructure-eventstoredb
+              pythoneda-runtime-infrastructure-eventstoredb-infrastructure
               pythoneda-shared-application
               pythoneda-shared-banner
               pythoneda-shared-domain
@@ -197,104 +203,119 @@
           };
       in rec {
         apps = rec {
-          default = pythoneda-runtime-boot-application-default;
-          pythoneda-runtime-boot-application-default =
-            pythoneda-runtime-boot-application-python311;
-          pythoneda-runtime-boot-application-python38 = shared.app-for {
-            package =
-              self.packages.${system}.pythoneda-runtime-boot-application-python38;
-            inherit entrypoint;
-          };
-          pythoneda-runtime-boot-application-python39 = shared.app-for {
-            package =
-              self.packages.${system}.pythoneda-runtime-boot-application-python39;
-            inherit entrypoint;
-          };
-          pythoneda-runtime-boot-application-python310 = shared.app-for {
-            package =
-              self.packages.${system}.pythoneda-runtime-boot-application-python310;
-            inherit entrypoint;
-          };
-          pythoneda-runtime-boot-application-python311 = shared.app-for {
-            package =
-              self.packages.${system}.pythoneda-runtime-boot-application-python311;
-            inherit entrypoint;
-          };
+          default =
+            pythoneda-runtime-infrastructure-eventstoredb-application-default;
+          pythoneda-runtime-infrastructure-eventstoredb-application-default =
+            pythoneda-runtime-infrastructure-eventstoredb-application-python311;
+          pythoneda-runtime-infrastructure-eventstoredb-application-python38 =
+            shared.app-for {
+              package =
+                self.packages.${system}.pythoneda-runtime-infrastructure-eventstoredb-application-python38;
+              inherit entrypoint;
+            };
+          pythoneda-runtime-infrastructure-eventstoredb-application-python39 =
+            shared.app-for {
+              package =
+                self.packages.${system}.pythoneda-runtime-infrastructure-eventstoredb-application-python39;
+              inherit entrypoint;
+            };
+          pythoneda-runtime-infrastructure-eventstoredb-application-python310 =
+            shared.app-for {
+              package =
+                self.packages.${system}.pythoneda-runtime-infrastructure-eventstoredb-application-python310;
+              inherit entrypoint;
+            };
+          pythoneda-runtime-infrastructure-eventstoredb-application-python311 =
+            shared.app-for {
+              package =
+                self.packages.${system}.pythoneda-runtime-infrastructure-eventstoredb-application-python311;
+              inherit entrypoint;
+            };
         };
         defaultApp = apps.default;
         defaultPackage = packages.default;
         devShells = rec {
-          default = pythoneda-runtime-boot-application-default;
-          pythoneda-runtime-boot-application-default =
-            pythoneda-runtime-boot-application-python311;
-          pythoneda-runtime-boot-application-python38 = shared.devShell-for {
-            banner = "${
-                pythoneda-shared-banner.packages.${system}.pythoneda-shared-banner-python38
-              }/bin/banner.sh";
-            extra-namespaces = "";
-            nixpkgs-release = nixpkgsRelease;
-            package = packages.pythoneda-runtime-boot-application-python38;
-            python = pkgs.python38;
-            pythoneda-shared-domain =
-              pythoneda-shared-domain.packages.${system}.pythoneda-shared-domain-python38;
-            pythoneda-shared-banner =
-              pythoneda-shared-banner.packages.${system}.pythoneda-shared-banner-python38;
-            inherit archRole layer org pkgs repo space;
-          };
-          pythoneda-runtime-boot-application-python39 = shared.devShell-for {
-            banner = "${
-                pythoneda-shared-banner.packages.${system}.pythoneda-shared-banner-python39
-              }/bin/banner.sh";
-            extra-namespaces = "";
-            nixpkgs-release = nixpkgsRelease;
-            package = packages.pythoneda-runtime-boot-application-python39;
-            python = pkgs.python39;
-            pythoneda-shared-domain =
-              pythoneda-shared-domain.packages.${system}.pythoneda-shared-domain-python39;
-            pythoneda-shared-banner =
-              pythoneda-shared-banner.packages.${system}.pythoneda-shared-banner-python39;
-            inherit archRole layer org pkgs repo space;
-          };
-          pythoneda-runtime-boot-application-python310 = shared.devShell-for {
-            banner = "${
-                pythoneda-shared-banner.packages.${system}.pythoneda-shared-banner-python310
-              }/bin/banner.sh";
-            extra-namespaces = "";
-            nixpkgs-release = nixpkgsRelease;
-            package = packages.pythoneda-runtime-boot-application-python310;
-            python = pkgs.python310;
-            pythoneda-shared-domain =
-              pythoneda-shared-domain.packages.${system}.pythoneda-shared-domain-python310;
-            pythoneda-shared-banner =
-              pythoneda-shared-banner.packages.${system}.pythoneda-shared-banner-python310;
-            inherit archRole layer org pkgs repo space;
-          };
-          pythoneda-runtime-boot-application-python311 = shared.devShell-for {
-            banner = "${
-                pythoneda-shared-banner.packages.${system}.pythoneda-shared-banner-python311
-              }/bin/banner.sh";
-            extra-namespaces = "";
-            nixpkgs-release = nixpkgsRelease;
-            package = packages.pythoneda-runtime-boot-application-python311;
-            python = pkgs.python311;
-            pythoneda-shared-domain =
-              pythoneda-shared-domain.packages.${system}.pythoneda-shared-domain-python311;
-            pythoneda-shared-banner =
-              pythoneda-shared-banner.packages.${system}.pythoneda-shared-banner-python311;
-            inherit archRole layer org pkgs repo space;
-          };
+          default =
+            pythoneda-runtime-infrastructure-eventstoredb-application-default;
+          pythoneda-runtime-infrastructure-eventstoredb-application-default =
+            pythoneda-runtime-infrastructure-eventstoredb-application-python311;
+          pythoneda-runtime-infrastructure-eventstoredb-application-python38 =
+            shared.devShell-for {
+              banner = "${
+                  pythoneda-shared-banner.packages.${system}.pythoneda-shared-banner-python38
+                }/bin/banner.sh";
+              extra-namespaces = "";
+              nixpkgs-release = nixpkgsRelease;
+              package =
+                packages.pythoneda-runtime-infrastructure-eventstoredb-application-python38;
+              python = pkgs.python38;
+              pythoneda-shared-domain =
+                pythoneda-shared-domain.packages.${system}.pythoneda-shared-domain-python38;
+              pythoneda-shared-banner =
+                pythoneda-shared-banner.packages.${system}.pythoneda-shared-banner-python38;
+              inherit archRole layer org pkgs repo space;
+            };
+          pythoneda-runtime-infrastructure-eventstoredb-application-python39 =
+            shared.devShell-for {
+              banner = "${
+                  pythoneda-shared-banner.packages.${system}.pythoneda-shared-banner-python39
+                }/bin/banner.sh";
+              extra-namespaces = "";
+              nixpkgs-release = nixpkgsRelease;
+              package =
+                packages.pythoneda-runtime-infrastructure-eventstoredb-application-python39;
+              python = pkgs.python39;
+              pythoneda-shared-domain =
+                pythoneda-shared-domain.packages.${system}.pythoneda-shared-domain-python39;
+              pythoneda-shared-banner =
+                pythoneda-shared-banner.packages.${system}.pythoneda-shared-banner-python39;
+              inherit archRole layer org pkgs repo space;
+            };
+          pythoneda-runtime-infrastructure-eventstoredb-application-python310 =
+            shared.devShell-for {
+              banner = "${
+                  pythoneda-shared-banner.packages.${system}.pythoneda-shared-banner-python310
+                }/bin/banner.sh";
+              extra-namespaces = "";
+              nixpkgs-release = nixpkgsRelease;
+              package =
+                packages.pythoneda-runtime-infrastructure-eventstoredb-application-python310;
+              python = pkgs.python310;
+              pythoneda-shared-domain =
+                pythoneda-shared-domain.packages.${system}.pythoneda-shared-domain-python310;
+              pythoneda-shared-banner =
+                pythoneda-shared-banner.packages.${system}.pythoneda-shared-banner-python310;
+              inherit archRole layer org pkgs repo space;
+            };
+          pythoneda-runtime-infrastructure-eventstoredb-application-python311 =
+            shared.devShell-for {
+              banner = "${
+                  pythoneda-shared-banner.packages.${system}.pythoneda-shared-banner-python311
+                }/bin/banner.sh";
+              extra-namespaces = "";
+              nixpkgs-release = nixpkgsRelease;
+              package =
+                packages.pythoneda-runtime-infrastructure-eventstoredb-application-python311;
+              python = pkgs.python311;
+              pythoneda-shared-domain =
+                pythoneda-shared-domain.packages.${system}.pythoneda-shared-domain-python311;
+              pythoneda-shared-banner =
+                pythoneda-shared-banner.packages.${system}.pythoneda-shared-banner-python311;
+              inherit archRole layer org pkgs repo space;
+            };
         };
         packages = rec {
-          default = pythoneda-runtime-boot-application-default;
-          pythoneda-runtime-boot-application-default =
-            pythoneda-runtime-boot-application-python311;
-          pythoneda-runtime-boot-application-python38 =
-            pythoneda-runtime-boot-application-for {
+          default =
+            pythoneda-runtime-infrastructure-eventstoredb-application-default;
+          pythoneda-runtime-infrastructure-eventstoredb-application-default =
+            pythoneda-runtime-infrastructure-eventstoredb-application-python311;
+          pythoneda-runtime-infrastructure-eventstoredb-application-python38 =
+            pythoneda-runtime-infrastructure-eventstoredb-application-for {
               python = pkgs.python38;
-              pythoneda-runtime-boot =
-                pythoneda-runtime-boot.packages.${system}.pythoneda-runtime-boot-python38;
-              pythoneda-runtime-boot-infrastructure =
-                pythoneda-runtime-boot-infrastructure.packages.${system}.pythoneda-runtime-boot-infrastructure-python38;
+              pythoneda-runtime-infrastructure-eventstoredb =
+                pythoneda-runtime-infrastructure-eventstoredb.packages.${system}.pythoneda-runtime-infrastructure-eventstoredb-python38;
+              pythoneda-runtime-infrastructure-eventstoredb-infrastructure =
+                pythoneda-runtime-infrastructure-eventstoredb-infrastructure.packages.${system}.pythoneda-runtime-infrastructure-eventstoredb-infrastructure-python38;
               pythoneda-shared-application =
                 pythoneda-shared-application.packages.${system}.pythoneda-shared-application-python38;
               pythoneda-shared-banner =
@@ -302,13 +323,13 @@
               pythoneda-shared-domain =
                 pythoneda-shared-domain.packages.${system}.pythoneda-shared-domain-python38;
             };
-          pythoneda-runtime-boot-application-python39 =
-            pythoneda-runtime-boot-application-for {
+          pythoneda-runtime-infrastructure-eventstoredb-application-python39 =
+            pythoneda-runtime-infrastructure-eventstoredb-application-for {
               python = pkgs.python39;
-              pythoneda-runtime-boot =
-                pythoneda-runtime-boot.packages.${system}.pythoneda-runtime-boot-python39;
-              pythoneda-runtime-boot-infrastructure =
-                pythoneda-runtime-boot-infrastructure.packages.${system}.pythoneda-runtime-boot-infrastructure-python39;
+              pythoneda-runtime-infrastructure-eventstoredb =
+                pythoneda-runtime-infrastructure-eventstoredb.packages.${system}.pythoneda-runtime-infrastructure-eventstoredb-python39;
+              pythoneda-runtime-infrastructure-eventstoredb-infrastructure =
+                pythoneda-runtime-infrastructure-eventstoredb-infrastructure.packages.${system}.pythoneda-runtime-infrastructure-eventstoredb-infrastructure-python39;
               pythoneda-shared-application =
                 pythoneda-shared-application.packages.${system}.pythoneda-shared-application-python39;
               pythoneda-shared-banner =
@@ -316,13 +337,13 @@
               pythoneda-shared-domain =
                 pythoneda-shared-domain.packages.${system}.pythoneda-shared-domain-python39;
             };
-          pythoneda-runtime-boot-application-python310 =
-            pythoneda-runtime-boot-application-for {
+          pythoneda-runtime-infrastructure-eventstoredb-application-python310 =
+            pythoneda-runtime-infrastructure-eventstoredb-application-for {
               python = pkgs.python310;
-              pythoneda-runtime-boot =
-                pythoneda-runtime-boot.packages.${system}.pythoneda-runtime-boot-python310;
-              pythoneda-runtime-boot-infrastructure =
-                pythoneda-runtime-boot-infrastructure.packages.${system}.pythoneda-runtime-boot-infrastructure-python310;
+              pythoneda-runtime-infrastructure-eventstoredb =
+                pythoneda-runtime-infrastructure-eventstoredb.packages.${system}.pythoneda-runtime-infrastructure-eventstoredb-python310;
+              pythoneda-runtime-infrastructure-eventstoredb-infrastructure =
+                pythoneda-runtime-infrastructure-eventstoredb-infrastructure.packages.${system}.pythoneda-runtime-infrastructure-eventstoredb-infrastructure-python310;
               pythoneda-shared-application =
                 pythoneda-shared-application.packages.${system}.pythoneda-shared-application-python310;
               pythoneda-shared-banner =
@@ -330,13 +351,13 @@
               pythoneda-shared-domain =
                 pythoneda-shared-domain.packages.${system}.pythoneda-shared-domain-python310;
             };
-          pythoneda-runtime-boot-application-python311 =
-            pythoneda-runtime-boot-application-for {
+          pythoneda-runtime-infrastructure-eventstoredb-application-python311 =
+            pythoneda-runtime-infrastructure-eventstoredb-application-for {
               python = pkgs.python311;
-              pythoneda-runtime-boot =
-                pythoneda-runtime-boot.packages.${system}.pythoneda-runtime-boot-python311;
-              pythoneda-runtime-boot-infrastructure =
-                pythoneda-runtime-boot-infrastructure.packages.${system}.pythoneda-runtime-boot-infrastructure-python311;
+              pythoneda-runtime-infrastructure-eventstoredb =
+                pythoneda-runtime-infrastructure-eventstoredb.packages.${system}.pythoneda-runtime-infrastructure-eventstoredb-python311;
+              pythoneda-runtime-infrastructure-eventstoredb-infrastructure =
+                pythoneda-runtime-infrastructure-eventstoredb-infrastructure.packages.${system}.pythoneda-runtime-infrastructure-eventstoredb-infrastructure-python311;
               pythoneda-shared-application =
                 pythoneda-shared-application.packages.${system}.pythoneda-shared-application-python311;
               pythoneda-shared-banner =
