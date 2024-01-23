@@ -27,7 +27,7 @@
       inputs.nixos.follows = "nixos";
       inputs.pythoneda-shared-banner.follows = "pythoneda-shared-banner";
       inputs.pythoneda-shared-domain.follows = "pythoneda-shared-domain";
-      url = "github:pythoneda-runtime-infrastructure-def/eventstoredb/0.0.0";
+      url = "github:pythoneda-runtime-infrastructure-def/eventstoredb/0.0.1";
     };
     pythoneda-runtime-infrastructure-eventstoredb-infrastructure = {
       inputs.flake-utils.follows = "flake-utils";
@@ -37,14 +37,14 @@
       inputs.pythoneda-shared-banner.follows = "pythoneda-shared-banner";
       inputs.pythoneda-shared-domain.follows = "pythoneda-shared-domain";
       url =
-        "github:pythoneda-runtime-infrastructure-def/eventstoredb-infrastructure/0.0.0";
+        "github:pythoneda-runtime-infrastructure-def/eventstoredb-infrastructure/0.0.1";
     };
     pythoneda-shared-application = {
       inputs.flake-utils.follows = "flake-utils";
       inputs.nixos.follows = "nixos";
       inputs.pythoneda-shared-banner.follows = "pythoneda-shared-banner";
       inputs.pythoneda-shared-domain.follows = "pythoneda-shared-domain";
-      url = "github:pythoneda-shared-def/application/0.0.46";
+      url = "github:pythoneda-shared-def/application/0.0.48";
     };
     pythoneda-shared-banner = {
       inputs.flake-utils.follows = "flake-utils";
@@ -55,7 +55,7 @@
       inputs.flake-utils.follows = "flake-utils";
       inputs.nixos.follows = "nixos";
       inputs.pythoneda-shared-banner.follows = "pythoneda-shared-banner";
-      url = "github:pythoneda-shared-def/domain/0.0.27";
+      url = "github:pythoneda-shared-def/domain/0.0.28";
     };
   };
   outputs = inputs:
@@ -64,8 +64,8 @@
       let
         org = "pythoneda-runtime-infrastructure";
         repo = "eventstoredb-application";
-        version = "0.0.0";
-        sha256 = "09nadgmspwk6s5lvyn51s6zgdww9n8j28pyxq99ckx7lpi05w5r6";
+        version = "0.0.1";
+        sha256 = "1701ywc5n4k37fl2p3zjs9l3rwywd1mapjkk47g0vy5dngbzjdab";
         pname = "${org}-${repo}";
         pythonpackage = builtins.replaceStrings [ "-" ] [ "." ] pname;
         package = builtins.replaceStrings [ "." ] [ "/" ] pythonpackage;
