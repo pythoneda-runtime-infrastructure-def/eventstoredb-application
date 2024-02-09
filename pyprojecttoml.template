@@ -29,9 +29,9 @@ packages = [{include = "@package@"}]
 python = "^@pythonMajorMinorVersion@"
 pythoneda-runtime-infrastructure-eventstoredb = "^@pythonedaRuntimeInfrastructureEventstoredb@"
 pythoneda-runtime-infrastructure-eventstoredb-infrastructure = "^@pythonedaRuntimeInfrastructureEventstoredbInfrastructure@"
-pythoneda-shared-application = "^@pythonedaSharedApplication@"
-pythoneda-shared-banner = "^@pythonedaSharedBanner@"
-pythoneda-shared-domain = "^@pythonedaSharedDomain@"
+pythoneda-shared-pythonlang-application = "^@pythonedaSharedPythonlangApplication@"
+pythoneda-shared-pythonlang-banner = "^@pythonedaSharedPythonlangBanner@"
+pythoneda-shared-pythonlang-domain = "^@pythonedaSharedPythonlangDomain@"
 
 [build-system]
 requires = ["poetry-core"]
